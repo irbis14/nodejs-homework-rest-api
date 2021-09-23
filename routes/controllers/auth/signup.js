@@ -1,6 +1,10 @@
+const fs = require('fs/promises');
+const path = require('path');
 const bcrypt = require('bcryptjs');
 const gravatar = require('gravatar');
 const { User } = require('../../../models');
+
+const avatarsDir = path.join(__dirname, '../../../', 'public/avatars');
 
 const signup = async (req, res, next) => {
   try {
@@ -13,6 +17,7 @@ const signup = async (req, res, next) => {
         message: 'Email in use',
       });
     }
+    // Set avatar
     const hashPassword = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
     const avatar = gravatar.url(email, { protocol: 'http', s: '100' });
     const result = await User.create({
@@ -20,6 +25,9 @@ const signup = async (req, res, next) => {
       password: hashPassword,
       avatarUrl: avatar,
     });
+    const dirPath = path.join(avatarsDir, result._id.toString());
+    await fs.mkdir(dirPath);
+
     res.status(201).json({
       status: 'success',
       code: 201,

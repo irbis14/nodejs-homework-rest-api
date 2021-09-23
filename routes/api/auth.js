@@ -9,7 +9,12 @@ const {
 
 const router = express.Router();
 
-router.post('/signup', validationMiddleware(JoiSchemaUser), ctrl.signup);
+router.post(
+  '/signup',
+  validationMiddleware(JoiSchemaUser),
+  upload.single('image'),
+  ctrl.signup,
+);
 
 router.post('/login', validationMiddleware(JoiSchemaUser), ctrl.login);
 
