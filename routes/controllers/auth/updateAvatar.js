@@ -1,4 +1,5 @@
 const fs = require('fs/promises');
+const Jimp = require('jimp');
 const path = require('path');
 
 const { User } = require('../../../models');
@@ -10,8 +11,10 @@ const updateAvatar = async (req, res) => {
   const { path: tempPath, originalname } = req.file;
   const uploadPath = path.join(avatarsDir, id, originalname);
   try {
+    const file = await Jimp.read(tempPath);
+    await file.resize(250, 250).write(tempPath);
     await fs.rename(tempPath, uploadPath);
-    const avatarUrl = `/public/avatars/${id}/${originalname}`;
+    const avatarUrl = `/avatars/${id}/${originalname}`;
     await User.findByIdAndUpdate(id, { avatarUrl });
     res.status(200).json({
       status: 'success',
