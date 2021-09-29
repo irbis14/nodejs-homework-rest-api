@@ -18,6 +18,13 @@ const login = async (req, res, next) => {
     if (!user) {
       unathorized();
     }
+    if (!user.verify) {
+      return res.status(401).json({
+        status: 'error',
+        code: 401,
+        message: 'Email is not verified',
+      });
+    }
 
     const hashPassword = user.password;
     const comparePassword = bcrypt.compareSync(password, hashPassword);
